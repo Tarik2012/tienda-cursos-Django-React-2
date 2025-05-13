@@ -1,0 +1,16 @@
+echo "__pycache__/
+*.py[cod]
+*.sqlite3
+*.log
+env/
+venv/
+.env
+node_modules/
+dist/
+build/
+.vscode/
+.idea/
+.DS_Store
+*.pyc
+*.pyo
+*.pyd" > .gitignore
