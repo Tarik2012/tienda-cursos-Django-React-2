@@ -33,7 +33,7 @@ const CourseDetail = () => {
     );
 
   return (
-    <div className="max-w-5xl mx-auto p-6 bg-white rounded-xl shadow-sm">
+    <div className="max-w-5xl mx-auto p-6 bg-white rounded-xl shadow-sm mt-10">
       {/* Cabecera del curso */}
       <div className="flex flex-col md:flex-row gap-6">
         {course.image && (

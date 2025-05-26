@@ -40,7 +40,9 @@ const CourseList = () => {
                   {course.title}
                 </h3>
                 <p className="text-gray-600 text-sm mb-3">
-                  {course.description}
+                  {course.description.length > 100
+                    ? course.description.slice(0, 100) + "..."
+                    : course.description}
                 </p>
                 <p className="text-blue-600 font-bold">{course.price} €</p>
               </div>

@@ -23,7 +23,6 @@ class CourseDetailView(RetrieveAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer     
 
-       
 class ReviewListCreateView(ListCreateAPIView):
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]

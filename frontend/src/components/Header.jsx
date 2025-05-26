@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { CartContext } from "../context/CartContext";
@@ -7,12 +7,22 @@ import SearchOverlay from "./SearchOverlay";
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showSearchOverlay, setShowSearchOverlay] = useState(false);
+  const [highlightCart, setHighlightCart] = useState(false);
   const navigate = useNavigate();
 
   const { isAuthenticated, logout } = useContext(AuthContext);
   const { cartItems } = useContext(CartContext);
 
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+
+  // 💡 Efecto visual cuando se actualiza el carrito
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      setHighlightCart(true);
+      const timeout = setTimeout(() => setHighlightCart(false), 1000);
+      return () => clearTimeout(timeout);
+    }
+  }, [cartItems]);
 
   const handleLogout = async () => {
     await logout();
@@ -44,8 +54,11 @@ function Header() {
             <Link to="/courses" className="text-gray-700 hover:text-blue-600">
               Cursos
             </Link>
-            <Link to="/noticias" className="text-gray-700 hover:text-blue-600">
-              Noticias
+            <Link to="/about" className="text-gray-700 hover:text-blue-600">
+              Sobre TariTech
+            </Link>
+            <Link to="/dashboard" className="text-gray-700 hover:text-blue-600">
+              Visualización de Datos
             </Link>
             <Link
               to="/user-panel"
@@ -86,10 +99,12 @@ function Header() {
               </button>
             )}
 
-            {/* 🛒 Carrito */}
+            {/* 🛒 Carrito con efecto visual */}
             <Link
               to="/cart"
-              className="text-gray-700 hover:text-blue-600 relative"
+              className={`relative ${
+                highlightCart ? "text-green-600 font-semibold" : "text-gray-700"
+              } hover:text-blue-600 transition-colors duration-300`}
             >
               🛒 Carrito {cartCount > 0 && `(${cartCount})`}
             </Link>
@@ -108,26 +123,41 @@ function Header() {
             Cursos
           </Link>
           <Link
-            to="/productos"
+            to="/about"
             className="block text-gray-700"
             onClick={() => setMenuOpen(false)}
           >
-            Productos
+            Sobre TariTech
           </Link>
           <Link
-            to="/noticias"
+            to="/dashboard"
             className="block text-gray-700"
             onClick={() => setMenuOpen(false)}
           >
-            Noticias
+            Visualización de Datos
           </Link>
+
+          {/* ✅ Añade esto */}
+          {isAuthenticated && (
+            <Link
+              to="/user-panel"
+              className="block text-gray-700"
+              onClick={() => setMenuOpen(false)}
+            >
+              Panel
+            </Link>
+          )}
+
           <Link
             to="/cart"
-            className="block text-gray-700"
+            className={`block ${
+              highlightCart ? "text-green-600 font-semibold" : "text-gray-700"
+            }`}
             onClick={() => setMenuOpen(false)}
           >
             🛒 Carrito {cartCount > 0 && `(${cartCount})`}
           </Link>
+
           <hr />
           {!isAuthenticated ? (
             <>
