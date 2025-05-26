@@ -11,4 +11,8 @@ tzdata==2025.2
 python-decouple
 dj-database-url
 psycopg2-binary
+python-dotenv
+whitenoise
+
+
 
