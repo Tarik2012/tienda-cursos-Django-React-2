@@ -109,9 +109,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # ✅ CORS y CSRF
 CORS_ALLOW_ALL_ORIGINS = DEBUG  # solo en desarrollo
-CSRF_TRUSTED_ORIGINS = [
-    'https://tu-dominio.railway.app',  # cambia si usas dominio personalizado
-]
+
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')
+
 CORS_ALLOWED_ORIGINS = [
     'https://tu-dominio.railway.app',
 ]
