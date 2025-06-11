@@ -4,15 +4,15 @@ import os
 from dotenv import load_dotenv
 import dj_database_url
 
-# ✅ Cargar variables de entorno desde .env (solo en desarrollo)
+# ✅ Cargar variables de entorno
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+ENVIRONMENT = os.getenv('ENV', 'development')  # 'development' o 'production'
 
 # ✅ Seguridad
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-key-for-dev')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
-
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 
 # ✅ Aplicaciones instaladas
@@ -23,7 +23,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'whitenoise.runserver_nostatic',  # sirve estáticos en prod
+    'whitenoise.runserver_nostatic',
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
@@ -38,7 +38,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # para estáticos
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -67,16 +67,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-# ✅ Base de datos (usa Railway si existe DATABASE_URL)
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL', f'sqlite:///{BASE_DIR / "db.sqlite3"}'),
-        conn_max_age=600,
-        ssl_require=not DEBUG
-    )
-}
+# ✅ Base de datos: SQLite en desarrollo, Railway en producción
+if ENVIRONMENT == 'production':
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.getenv('DATABASE_URL'),
+            conn_max_age=600,
+            ssl_require=True
+        )
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
-# ✅ Validadores
+# ✅ Validadores de contraseña
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -84,25 +92,25 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+# ✅ Zona horaria y lenguaje
 LANGUAGE_CODE = 'es-es'
 TIME_ZONE = 'Europe/Madrid'
 USE_I18N = True
 USE_TZ = True
 
-# ✅ Archivos estáticos
+# ✅ Archivos estáticos y media
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# ✅ Archivos de medios
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # ✅ CORS y CSRF
-CORS_ALLOW_ALL_ORIGINS = DEBUG
+CORS_ALLOW_ALL_ORIGINS = DEBUG  # solo en desarrollo
 CSRF_TRUSTED_ORIGINS = [
-    'https://tu-dominio.railway.app',  # reemplaza luego si usas dominio personalizado
+    'https://tu-dominio.railway.app',  # cambia si usas dominio personalizado
 ]
 CORS_ALLOWED_ORIGINS = [
     'https://tu-dominio.railway.app',
@@ -111,7 +119,7 @@ CORS_ALLOWED_ORIGINS = [
 # ✅ Usuario personalizado
 AUTH_USER_MODEL = 'users.CustomUser'
 
-# ✅ REST + JWT
+# ✅ JWT y REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -121,10 +129,10 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'AUTH_HEADER_TYPES': ('Bearer',),
-    "BLACKLIST_AFTER_ROTATION": True,
+    'BLACKLIST_AFTER_ROTATION': True,
 }
 
-# ✅ Email seguro
+# ✅ Email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
