@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { CartContext } from "../context/CartContext";
 import SearchOverlay from "./SearchOverlay";
+import logo from "/logo1.png";
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -35,7 +36,7 @@ function Header() {
       <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center">
           <img
-            src="/logo1.png"
+            src={logo}
             alt="TariTech Logo"
             className="h-16 w-auto max-w-none object-contain"
           />
