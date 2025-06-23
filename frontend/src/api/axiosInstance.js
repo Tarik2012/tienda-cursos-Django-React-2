@@ -3,7 +3,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:8000/api",
+  baseURL: "https://tienda-cursos-django-react-2-production.up.railway.app/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -34,9 +34,12 @@ axiosInstance.interceptors.response.use(
     ) {
       originalRequest._retry = true;
       try {
-        const res = await axios.post("http://localhost:8000/api/users/token/refresh/", {
-          refresh: localStorage.getItem("refreshToken"),
-        });
+        const res = await axios.post(
+          "https://tienda-cursos-django-react-2-production.up.railway.app/api/users/token/refresh/",
+          {
+            refresh: localStorage.getItem("refreshToken"),
+          }
+        );
 
         const newAccessToken = res.data.access;
         localStorage.setItem("accessToken", newAccessToken);
@@ -44,7 +47,6 @@ axiosInstance.interceptors.response.use(
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         console.error("Refresh token failed", refreshError);
-        // Puedes borrar los tokens si quieres forzar logout
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
         window.location.href = "/login";
